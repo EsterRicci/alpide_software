@@ -9,7 +9,8 @@ public:
   int GetY();
   void SetX(int xin);
   void SetY(int yin);
-
+  bool operator == (const AHit& hit) const;
+  AHit& operator=(const AHit& other);
 private:
   int x;
   int y;

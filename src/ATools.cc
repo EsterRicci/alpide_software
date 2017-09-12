@@ -1,17 +1,21 @@
 #include "AEvent.hh"
 #include "ACluster.hh"
 #include "AHit.hh"
+#include "AGraphicTools.hh"
+#include "AMask.hh"
 
 #include <vector>
 #include <cmath>
 #include <string>
 #include <fstream>
+#include <iostream>
+
+#include "TH2.h"
 
 
 std::vector<ACluster> FillClusters(std::vector<AHit> input){
   std::vector<AHit> buffer=input;
   std::vector<ACluster> result;
- 
   ACluster cluster;
   std::vector<AHit> far[CLUSTERMAXNUM+1];
   cluster.AddHit(buffer.at(0));
@@ -58,9 +62,11 @@ std::vector<ACluster> FillClusters(std::vector<AHit> input){
 
 }
 
-std::vector<AEvent> CollectDataFromFile(std::string filename){
+std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
 
-  std::vector<AEvent> result;  
+  std::vector<AEvent> result;
+  std::vector<AHit> failPixel=mymask.GetFailingPixel();
+  int failsize=mymask.GetFailingPixelNumber();
   std::ifstream inputfile(filename,std::ifstream::in);
   int trig=0;
   int trig_id=0;
@@ -79,8 +85,10 @@ std::vector<AEvent> CollectDataFromFile(std::string filename){
       inputfile>>x>>y;
       inHit.SetX(x);
       inHit.SetY(y);
-      
-      hits.push_back(inHit);
+      bool isGood=true;
+      for(int ifail=0;ifail<failsize;++ifail)
+	if(inHit==failPixel.at(ifail)) isGood=false;
+      if(isGood)hits.push_back(inHit);
       inputfile>>trig_id;
     }
     
@@ -92,4 +100,33 @@ std::vector<AEvent> CollectDataFromFile(std::string filename){
 
 
   return result;
+}
+
+
+//Mask Tools
+AMask CreateMask(std::string inputfile,int trignum){
+  std::cout <<"Creating Mask from file!"<<std::endl;
+  AMask voidmask;
+  std::vector<AEvent> data=CollectDataFromFile(inputfile,voidmask);
+  TH2I* map=FullMap(data);
+  std::cout<<"Map Created. Starting reading pixels"<<std::endl;
+  std::vector<AHit> failingPixel;
+  for(int ix=0;ix<XPIXEL;++ix){
+    for(int iy=0;iy<YPIXEL;++iy){
+      int pixelvalue=map->GetBinContent(ix,iy);
+      if(pixelvalue>=sqrt(trignum)){
+	AHit fpixel(ix,iy);
+	failingPixel.push_back(fpixel);
+	std::cout<<"Pixel "<<ix<<" "<<iy<<" is failing!"<<std::endl;
+      }
+      if(!ix%100 &&!iy%100 )std::cout<<"#";
+
+    }
+
+  }
+  std::cout<<std::endl;
+  std::cout<<"Mask created!"<<std::endl;
+  AMask result(failingPixel);
+  return result;
+
 }

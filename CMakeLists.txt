@@ -12,5 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB_RECURSE sources ${CMAKE_SOURCE_DIR}/src/*cc)
 
 add_executable(AnalysisEster AnalysisEster.cc ${sources})
+add_executable(CreateMask CreateMask.cc ${sources})
 
 target_link_libraries(AnalysisEster ${ROOT_LIBRARIES})
+target_link_libraries(CreateMask ${ROOT_LIBRARIES})

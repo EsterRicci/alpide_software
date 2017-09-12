@@ -36,3 +36,17 @@ void AHit::SetY(int yin){
   return;
 
 }
+
+bool AHit::operator == (const AHit& hit) const{
+  bool result = (x==hit.x && y==hit.y);
+  return result;
+
+}
+
+AHit& AHit::operator=(const AHit& other){
+  if(&other == this)
+    return *this;
+  this->x=other.x;
+  this->y=other.y;
+  return *this;
+}
