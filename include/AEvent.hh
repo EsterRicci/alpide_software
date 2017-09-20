@@ -17,6 +17,7 @@ public:
   void AddCluster(ACluster cluster);
   ACluster GetCluster(int clusterID);
   int GetClusterNumber();
+  int GetEventSize();
 
 private:
   int trig_id;

@@ -55,3 +55,14 @@ int AEvent::GetClusterNumber(){
 
 
 }
+
+int AEvent::GetEventSize(){
+  int result=0;
+  int eventsize=clusters.size();
+  for(int iev=0;iev<eventsize;++iev){
+    result+=clusters.at(iev).GetClusterSize();
+
+    }
+
+  return result;
+}

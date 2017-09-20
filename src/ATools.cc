@@ -65,8 +65,10 @@ std::vector<ACluster> FillClusters(std::vector<AHit> input){
 std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
 
   std::vector<AEvent> result;
+  
   std::vector<AHit> failPixel=mymask.GetFailingPixel();
   int failsize=mymask.GetFailingPixelNumber();
+ 
   std::ifstream inputfile(filename,std::ifstream::in);
   int trig=0;
   int trig_id=0;
@@ -86,12 +88,16 @@ std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
       inHit.SetX(x);
       inHit.SetY(y);
       bool isGood=true;
-      for(int ifail=0;ifail<failsize;++ifail)
-	if(inHit==failPixel.at(ifail)) isGood=false;
+      for(int ifail=0;ifail<failsize;++ifail){
+	if(inHit.GetX()==failPixel.at(ifail).GetX() && inHit.GetY()==failPixel.at(ifail).GetY()) isGood=false;
+      }
       if(isGood)hits.push_back(inHit);
+      else std::cout<<"Pixel "<<inHit.GetX()<<" "<<inHit.GetY()<<"rejected!"<<std::endl;
       inputfile>>trig_id;
+      
     }
-    
+      
+      
     inEvent.SetClusters(FillClusters(hits));
     result.push_back(inEvent);
     trig=trig_id;
@@ -108,18 +114,17 @@ AMask CreateMask(std::string inputfile,int trignum){
   std::cout <<"Creating Mask from file!"<<std::endl;
   AMask voidmask;
   std::vector<AEvent> data=CollectDataFromFile(inputfile,voidmask);
-  TH2I* map=FullMap(data);
+  TH2I* map=FullMap(data,inputfile);
   std::cout<<"Map Created. Starting reading pixels"<<std::endl;
   std::vector<AHit> failingPixel;
   for(int ix=0;ix<XPIXEL;++ix){
     for(int iy=0;iy<YPIXEL;++iy){
       int pixelvalue=map->GetBinContent(ix,iy);
-      if(pixelvalue>=sqrt(trignum)){
+      if(pixelvalue>=10){
 	AHit fpixel(ix,iy);
 	failingPixel.push_back(fpixel);
 	std::cout<<"Pixel "<<ix<<" "<<iy<<" is failing!"<<std::endl;
       }
-      if(!ix%100 &&!iy%100 )std::cout<<"#";
 
     }
 
@@ -129,4 +134,14 @@ AMask CreateMask(std::string inputfile,int trignum){
   AMask result(failingPixel);
   return result;
 
+}
+
+
+AMask CreateMask2(std::string inputfile){
+  AMask voidmask;
+  AMask result;
+  std::vector<AEvent> data=CollectDataFromFile(inputfile,voidmask);
+  TH2I* map=FullMap(data,inputfile);
+
+  return result;
 }

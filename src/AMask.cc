@@ -44,7 +44,7 @@ void AMask::Dump(){
 	   <<"# of failing pixels= "<<size<<std::endl;
   
   if(size>0){
-    std::cout<<"A list of the failinf pixels follows:"<<std::endl;
+    std::cout<<"A list of the failing pixels follows:"<<std::endl;
     for(int ip=0;ip<size;++ip)
       std::cout<<"X = "<<fail.at(ip).GetX()<<"\t Y = "<<fail.at(ip).GetY()<<std::endl;
 
@@ -72,10 +72,14 @@ AMask AMask::Read(std::string inputfile){
   
   while(!in.eof()){
     in>>x>>y;
-    AHit px(x,y);
+    AHit px;
+    px.SetX(x);
+    px.SetY(y);
     pixels.push_back(px);
   }
-  AMask result(pixels);  
+  AMask result(pixels);
+  //result.SetFailingPixel(pixels);
+  result.Dump();
 
   return result;
 }
