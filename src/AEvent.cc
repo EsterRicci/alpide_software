@@ -66,3 +66,16 @@ int AEvent::GetEventSize(){
 
   return result;
 }
+
+void AEvent::Dump(){
+  int clusternumber=clusters.size();
+  std::cout<<"***************************************"<<std::endl
+	   <<"The trigger id of the event is "<<trig_id<<std::endl
+	   <<"The event contains "<<clusternumber<<" clusters"<<std::endl;
+  for(int icl=0;icl<clusternumber;++icl){
+    clusters.at(icl).Dump();
+
+  }
+  return;
+
+}

@@ -34,7 +34,7 @@ std::vector<ACluster> FillClusters(std::vector<AHit> input){
       
    
   }
-  result.push_back(cluster);
+  if(cluster.GetClusterSize()>1)result.push_back(cluster);
      
   int i=0;
   while(i<CLUSTERMAXNUM && far[i].size()>0){
@@ -54,7 +54,7 @@ std::vector<ACluster> FillClusters(std::vector<AHit> input){
       
     }
        
-    result.push_back(cl);
+    if (cl.GetClusterSize()>1) result.push_back(cl);
        
   }
         
@@ -91,6 +91,7 @@ std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
       for(int ifail=0;ifail<failsize;++ifail){
 	if(inHit.GetX()==failPixel.at(ifail).GetX() && inHit.GetY()==failPixel.at(ifail).GetY()) isGood=false;
       }
+      
       if(isGood)hits.push_back(inHit);
       else std::cout<<"Pixel "<<inHit.GetX()<<" "<<inHit.GetY()<<"rejected!"<<std::endl;
       inputfile>>trig_id;
@@ -99,7 +100,8 @@ std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
       
       
     inEvent.SetClusters(FillClusters(hits));
-    result.push_back(inEvent);
+    //inEvent.Dump();
+    if(inEvent.GetEventSize()>1)result.push_back(inEvent);
     trig=trig_id;
     //std::cout<<"Trigger index: "<<trig_id<<" x: "<<x<<" y: "<<y<<std::endl;
   }

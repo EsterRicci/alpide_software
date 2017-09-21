@@ -41,10 +41,10 @@ int main(int argc, char **argv){
     controlfilein.append("[");
     std::string controlfileout=controlfile;
     controlfileout.append("]");
-    /*  
+      
     TCanvas* can=new TCanvas();
     can->Print(controlfilein.c_str(),"pdf");
-    */
+    
     while(!inlist.eof()){
       inlist>>file>>Ebeam>>mask;   
       /*
@@ -53,9 +53,10 @@ int main(int argc, char **argv){
       //test read mask
       inmask.Dump();
       */
+      std::cout<<"Collecting Events from file"<<std::endl;
       std::vector<AEvent> test=CollectDataFromFile(file,inmask);
       std::cout<<"Events Collected!"<<std::endl;
-      /*
+      
       TH1I* clustersize=ClusterSizeHisto(test,file);
       
       double clsize=clustersize->GetMean();
@@ -70,13 +71,15 @@ int main(int argc, char **argv){
       TH2I* map=FullMap(test,file);
       TH1I* entriesdist=EntriesPerPixel(map,100000);
       TH1I* eventsize=EventSizeDistribution(test,file);
-      //TH2I* size1events=MapEventSized(test,1,file);
-      */
-      /*
+      TH2I* size1events=MapEventSized(test,1,file);
+      
+      
       map->Draw("zcol");
       can->Print(controlfile.c_str(),"pdf");
-      */
-      /*
+      size1events->Draw("zcol");
+      can->Print(controlfile.c_str(),"pdf");
+            
+      
       //can->SetLogy();
       entriesdist->Draw();
       can->Print(controlfile.c_str(),"pdf");
@@ -84,20 +87,17 @@ int main(int argc, char **argv){
       can->Print(controlfile.c_str(),"pdf");
       clustersize->Draw();
       can->Print(controlfile.c_str(),"pdf");
-      */
-      /*
-      size1events->Draw("zcol");
-      can->Print(controlfile.c_str(),"pdf");
-      */
+      
+
     }
-    /*
+    
     can->Print(controlfileout.c_str(),"pdf");
     std::string fileout=argv[2];
     fileout.append(".pdf");
     TCanvas* can2=new TCanvas();
     can2=ClusterSizeDistribution(energy,clsz,clsz_err,"Cluster Size at different energies;E [MeV]; Cluster Size");
     can2->Print(fileout.c_str(),"pdf");
-    */
+    
     return 1;
   }
 }

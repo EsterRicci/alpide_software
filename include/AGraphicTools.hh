@@ -21,6 +21,6 @@ TH1I* EntriesPerPixel(TH2I* map,int ntrig);
 TCanvas* ClusterSizeDistribution(std::vector<double> x,std::vector<double> y,std::vector<double> y_err,std::string title);
 //Debug Tools
 TH1I* EventSizeDistribution(std::vector<AEvent> input,std::string inputname);
-//TH2I* MapEventSized(std::vector<AEvent> input, int size,std::string inputname);
+TH2I* MapEventSized(std::vector<AEvent> input, int size,std::string inputname);
 
 #endif
