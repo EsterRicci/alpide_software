@@ -94,9 +94,27 @@ TH1I* EntriesPerPixel(TH2I* map,int ntrig){
   return result;
 }
 
+TGraphErrors* ClusterSizePlot(std::vector<double> x,std::vector<double> y,std::vector<double> y_err,std::string title){
+  TGraphErrors* result=new TGraphErrors(x.size());
+  if(x.size()!=y.size() || y.size()!=y_err.size()) return result;
+  else{
+    int sizeofgraph=x.size();
+    for(int ip=0;ip<sizeofgraph;++ip){
+      result->SetPoint(ip,x.at(ip),y.at(ip));
+      result->SetPointError(ip,0,y_err.at(ip));
+    }
+      result->SetTitle(title.c_str());
+    return result;
+  }
+  }
 
-TCanvas* ClusterSizeDistribution(std::vector<double> x,std::vector<double> y,std::vector<double> y_err,std::string title){
+TCanvas* ClusterSizeDistribution(std::vector<double> x,std::vector<double> y,std::vector<double> y_err,std::string title,bool logx){
   TCanvas* result=new TCanvas();
+  //  auto xmin=min_element(std::begin(x),std::end(x));
+  auto xmax=*max_element(std::begin(x),std::end(x));
+  TH1* bg=result->DrawFrame(0.1,0,xmax+10,15);
+  bg->SetTitle(title.c_str());
+  result->Update();
   if(x.size()==y.size() && y.size()==y_err.size()){
     int sizeofgraph=x.size();
 
@@ -106,13 +124,40 @@ TCanvas* ClusterSizeDistribution(std::vector<double> x,std::vector<double> y,std
       plot->SetPointError(ip,0,y_err.at(ip));
 
     }
+    if(logx) result->SetLogx();
     plot->SetTitle(title.c_str());
     plot->SetMarkerStyle(22);
-    plot->Draw("AP");
+    plot->SetFillStyle(3005);
+    plot->Draw("P same");
   }
   else std::cout<<"ERROR! Vectors must have the same length!"<<std::endl;
   return result;
 }
+
+TCanvas* ResolutionDistribution(std::vector<double> x,std::vector<double> y,std::vector<double> y_err,std::string  title){
+  TCanvas* result=new TCanvas();
+  TH1* bg=result->DrawFrame(0,0,240.,1.);
+  bg->SetTitle(title.c_str());
+  result->Update();
+  if(x.size()==y.size() && y.size()==y_err.size()){
+    int sizeofgraph=x.size();
+
+    TGraphErrors* plot=new TGraphErrors(sizeofgraph);
+    for(int ip=0;ip<sizeofgraph;++ip){
+      plot->SetPoint(ip,x.at(ip),y_err.at(ip)/y.at(ip));
+      plot->SetPointError(ip,0,0);
+
+    }
+    plot->SetTitle(title.c_str());
+    plot->SetMarkerStyle(22);
+    plot->SetFillStyle(3005);
+    plot->SetLineWidth(3);
+    plot->Draw("PL same");
+  }
+  else std::cout<<"ERROR! Vectors must have the same length!"<<std::endl;
+  return result;
+}
+
 
 TH1I* EventSizeDistribution(std::vector<AEvent> input,std::string inputname){
   std::size_t found = inputname.find_last_of("/");
@@ -156,5 +201,42 @@ TH2I* MapEventSized(std::vector<AEvent> input, int size,std::string inputname){
     
   }
 	      
+  return result;
+}
+
+TCanvas* EventNumberDistribution(std::vector<int> x, std::vector<int> y,const char* title,bool logx,bool logy){
+  TCanvas* result=new TCanvas();
+  if(x.size()!=x.size()) std::cout<<"ERROR! Vectors must have the same size! Returning an empty Canvas."<<std::endl;
+  else{
+    TGraph* plot=EventNumber(x,y,title);
+  
+    auto xmax=*max_element(std::begin(x),std::end(x));
+    auto ymin=*min_element(std::begin(y),std::end(y));
+    auto ymax=*max_element(std::begin(y),std::end(y));
+    if(logx) result->SetLogx();
+    if(logy) result->SetLogy();
+    TH1* bg=result->DrawFrame(1,ymin-10,xmax+100,ymax+100);
+    bg->SetTitle(title);
+    result->Update();
+    plot->SetMarkerStyle(22);
+    plot->SetMarkerColor(4);
+    plot->Draw("P same");
+  }
+
+  return result;
+}
+
+TGraph *EventNumber(std::vector<int> x, std::vector<int> y,const char* title){
+
+  TGraph* result=new TGraph(x.size());
+
+  if(x.size()!=x.size()) std::cout<<"ERROR! Vectors must have the same size! Returning an empty Canvas."<<std::endl;
+  else{
+    int size=x.size();
+    for(int i=0;i<size;++i){
+      result->SetPoint(i,x.at(i),y.at(i));
+      result->SetTitle(title);
+    }
+  }
   return result;
 }
