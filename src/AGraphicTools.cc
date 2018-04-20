@@ -108,6 +108,21 @@ TGraphErrors* ClusterSizePlot(std::vector<double> x,std::vector<double> y,std::v
   }
   }
 
+TGraphErrors* ClusterSizePlot(std::vector<double> x,std::vector<double> y,std::vector<double> x_err,std::vector<double> y_err,std::string title){
+  TGraphErrors* result=new TGraphErrors(x.size());
+  if(x.size()!=y.size() || y.size()!=y_err.size()) return result;
+  else{
+    int sizeofgraph=x.size();
+    for(int ip=0;ip<sizeofgraph;++ip){
+      result->SetPoint(ip,x.at(ip),y.at(ip));
+      result->SetPointError(ip,x_err.at(ip),y_err.at(ip));
+    }
+    result->SetTitle(title.c_str());
+    return result;
+  }
+}
+
+
 TCanvas* ClusterSizeDistribution(std::vector<double> x,std::vector<double> y,std::vector<double> y_err,std::string title,bool logx){
   TCanvas* result=new TCanvas();
   //  auto xmin=min_element(std::begin(x),std::end(x));
@@ -133,6 +148,32 @@ TCanvas* ClusterSizeDistribution(std::vector<double> x,std::vector<double> y,std
   else std::cout<<"ERROR! Vectors must have the same length!"<<std::endl;
   return result;
 }
+TCanvas* ClusterSizeDistribution(std::vector<double> x,std::vector<double> y,std::vector<double> x_err,std::vector<double> y_err,std::string title,bool logx){
+  TCanvas* result=new TCanvas();
+  //  auto xmin=min_element(std::begin(x),std::end(x));                                                                                                                 
+  auto xmax=*max_element(std::begin(x),std::end(x));
+  TH1* bg=result->DrawFrame(0.1,0,xmax+0.5,15);
+  bg->SetTitle(title.c_str());
+  result->Update();
+  if(x.size()==y.size() && y.size()==y_err.size()){
+    int sizeofgraph=x.size();
+
+    TGraphErrors* plot=new TGraphErrors(sizeofgraph);
+    for(int ip=0;ip<sizeofgraph;++ip){
+      plot->SetPoint(ip,x.at(ip),y.at(ip));
+      plot->SetPointError(ip,x_err.at(ip),y_err.at(ip));
+
+    }
+    if(logx) result->SetLogx();
+    plot->SetTitle(title.c_str());
+    plot->SetMarkerStyle(22);
+    plot->SetFillStyle(3005);
+    plot->Draw("P same");
+  }
+  else std::cout<<"ERROR! Vectors must have the same length!"<<std::endl;
+  return result;
+}
+
 
 TCanvas* ResolutionDistribution(std::vector<double> x,std::vector<double> y,std::vector<double> y_err,std::string  title){
   TCanvas* result=new TCanvas();

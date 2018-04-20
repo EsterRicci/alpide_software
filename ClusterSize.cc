@@ -15,13 +15,13 @@
 
 int main(int argc, char **argv){
   if(argc!=3){
-    std::cout<<"Please type ./AnalysisEster <inputlist> <outname>"<<std::endl;
+    std::cout<<"Please type ./ClusterSize <inputlist> <outname>"<<std::endl;
     return 0;
   }
   else {
   
-    ClusterAnalysisEnergy(argv[1],argv[2]);
-
+    //ClusterAnalysisEnergy(argv[1],argv[2]);
+    ClusterAnalysisEdep(argv[1],argv[2]);
     return 1;
   }
 }
