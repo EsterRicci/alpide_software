@@ -1,5 +1,6 @@
 #include "AGraphicTools.hh"
 #include "AEvent.hh"
+#include "ACluster.hh"
 
 #include <vector>
 #include <string>
@@ -79,6 +80,15 @@ TCanvas* ClusterSizePlot(std::vector<AEvent> input,std::string inputname){
 
 }
 
+TH2I* NoisyPixels(TH2I* map,const int threshold){
+  TH2I* result=new TH2I("noisypixels",Form("Noisy Pixels, threshold %d hits;column;row",threshold),XPIXEL,0,XPIXEL,YPIXEL,0,YPIXEL);
+  for(int ix=0;ix<XPIXEL;++ix){
+    for(int iy=0;iy<YPIXEL;++iy){
+      if(map->GetBinContent(ix,iy)>threshold) result->Fill(ix,iy,map->GetBinContent(ix,iy));
+    }
+  }
+  return result;
+}
 
 TH1I* EntriesPerPixel(TH2I* map,int ntrig){
   TH1I* result=new TH1I("hits_dist","Hits distributions;hit number;pixel number",50,0,50);
@@ -279,5 +289,39 @@ TGraph *EventNumber(std::vector<int> x, std::vector<int> y,const char* title){
       result->SetTitle(title);
     }
   }
+  return result;
+}
+
+TH1I* EventClusters(std::vector<AEvent> input,std::string inputname){
+  std::size_t found = inputname.find_last_of("/");
+  std::string histoname=inputname.substr(found+1,inputname.size());
+  histoname.erase(histoname.end()-4,histoname.end());
+  // histoname.erase(histoname.begin(),histoname.begin()+1);
+  histoname.append("_clusternumber");
+  
+
+  TH1I* result=new TH1I(histoname.c_str(),"Clusters in each event;clusters;counts",20,0,20);
+
+  for(int iev=0;iev<input.size();++iev){
+    //std::cout<<"Event "<<iev<<" cluster number "<<input.at(iev).GetClusterNumber()<<std::endl;
+    result->Fill(input.at(iev).GetClusterNumber());
+  }
+  return result;
+}
+
+TH2I* ClusterPlot(ACluster input,const int ev,const int clusterNumber){
+  int Xcluster=0;
+  int Ycluster=0;
+  for(int ihit=0;ihit<input.GetClusterSize();++ihit){
+    Xcluster+=input.GetHit(ihit).GetX();
+    Ycluster+=input.GetHit(ihit).GetY();
+  }
+  Xcluster/=input.GetClusterSize();
+  Ycluster/=input.GetClusterSize();
+  TH2I* result=new TH2I(Form("ev%d_custer%d",ev ,clusterNumber),";column;row",10,Xcluster-5,Xcluster+5,10,Ycluster-5,Ycluster+5);
+  for(int ihit=0;ihit<input.GetClusterSize();++ihit){
+    result->Fill(input.GetHit(ihit).GetX(),input.GetHit(ihit).GetY());
+  }
+  
   return result;
 }

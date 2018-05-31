@@ -82,7 +82,7 @@ void ClusterAnalysisEnergy(const char* filelist, const char* outputname){
     size1events->Draw("zcol");
     can->Print(controlfile.c_str(),"pdf");
             
-      
+       
     //can->SetLogy();
     entriesdist->Draw();
     can->Print(controlfile.c_str(),"pdf");
