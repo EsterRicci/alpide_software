@@ -10,5 +10,10 @@ int main(int argc, char** argv){
   else if(argc==2){
     ShowMultiClusterEvents(argv[1]);
   }
+  else if(argc==4){
+    int startev=std::stoi(argv[2]);
+    int stopev=std::stoi(argv[3]);
+    DisplayEventsInAInterval(argv[1],startev,stopev);
+  }
   return 0;
 }

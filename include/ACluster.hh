@@ -13,6 +13,13 @@ public:
   AHit  GetHit(int hitID);
   int GetClusterSize();
   void Dump();
+  int GetXMean();
+  int GetYMean();
+
+  double GetSigmaX();
+  double GetSigmaY();
+  double GetSigmaPi4();
+  double GetSigma3Pi4();
 
 private:
   std::vector<AHit> clusterhits;
