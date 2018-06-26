@@ -4,14 +4,16 @@
 #include "ACluster.hh"
 #include <vector>
 
-const int CLUSTERMAXNUM=10;
+const int CLUSTERMAXNUM=100;
 
 class AEvent{
 public:
   AEvent();
-  AEvent(int trigger,std::vector<ACluster> cl);
+  AEvent(int trigger,long int time,std::vector<ACluster> cl);
   void SetTriggerID(int trigger);
   int GetTriggerID();
+  void SetTimeStamp(long int time);
+  long int GetTimeStamp();
   std::vector<ACluster> GetClusters();
   void SetClusters(std::vector<ACluster> input);
   void AddCluster(ACluster cluster);
@@ -22,6 +24,7 @@ public:
 
 private:
   int trig_id;
+  long int timestamp;
   std::vector<ACluster> clusters;
 
 

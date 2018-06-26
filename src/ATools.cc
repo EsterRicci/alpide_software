@@ -72,6 +72,7 @@ std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
   std::ifstream inputfile(filename,std::ifstream::in);
   int trig=0;
   int trig_id=0;
+  long int timestamp;
   int x=0;
   int y=0;
   inputfile>>trig_id;
@@ -84,9 +85,15 @@ std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
     std::vector<AHit> hits;
     while(trig==trig_id && !inputfile.eof()){
       AHit inHit;
+      inputfile>>timestamp;
       inputfile>>x>>y;
       inHit.SetX(x);
       inHit.SetY(y);
+      inEvent.SetTimeStamp(timestamp);
+      //      std::cout<<timestamp<<std::endl;
+      //*************************************Alpduino debug
+      //std::cout<<trig<<"\t"<<x<<"\t"<<y<<std::endl;
+
       bool isGood=true;
       for(int ifail=0;ifail<failsize;++ifail){
 	if(inHit.GetX()==failPixel.at(ifail).GetX() && inHit.GetY()==failPixel.at(ifail).GetY()) isGood=false;
@@ -105,8 +112,15 @@ std::vector<AEvent> CollectDataFromFile(std::string filename, AMask mymask){
     trig=trig_id;
     //std::cout<<"Trigger index: "<<trig_id<<" x: "<<x<<" y: "<<y<<std::endl;
   }
-
-
+  /*
+  for(int iev=0;iev<result.size();++iev){
+    for(int iCl=0;iCl<result.at(iev).GetClusterNumber();++iCl){
+      for(int iHit=0;iHit<result.at(iev).GetCluster(iCl).GetClusterSize();++iHit){
+	std::cout<<result.at(iev).GetTriggerID()<<"\t"<<result.at(iev).GetCluster(iCl).GetHit(iHit).GetX()<<"\t"<<result.at(iev).GetCluster(iCl).GetHit(iHit).GetY()<<std::endl;
+      }
+    }
+  }
+  */
   return result;
 }
 

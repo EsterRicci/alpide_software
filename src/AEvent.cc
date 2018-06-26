@@ -6,11 +6,12 @@
 
 AEvent::AEvent(){
   trig_id=-999;
-
+  timestamp=-9999;
 }
 
-AEvent::AEvent(int trigger, std::vector<ACluster> cl){
+AEvent::AEvent(int trigger, long int time,std::vector<ACluster> cl){
   trig_id=trigger;
+  timestamp=time;
   clusters=cl;
 
 }
@@ -24,6 +25,15 @@ void AEvent::SetTriggerID(int trigger){
 int AEvent::GetTriggerID(){
   return trig_id;
 
+}
+
+void AEvent::SetTimeStamp(long int time){
+  timestamp=time;
+  return;
+}
+
+long int AEvent::GetTimeStamp(){
+  return timestamp;
 }
 
 std::vector<ACluster> AEvent::GetClusters(){
